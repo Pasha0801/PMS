@@ -1,0 +1,10 @@
+npm run lint-fix
+echo -e "\x1b[32m Lint fix OK \x1b[0m"
+
+npm run prettier-fix
+echo -e "\x1b[32m Prettier fix OK \x1b[0m"
+
+npm run type-check
+echo -e "\x1b[32m Typecheck OK \x1b[0m"
+
+git add .

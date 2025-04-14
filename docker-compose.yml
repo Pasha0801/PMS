@@ -1,0 +1,26 @@
+services:
+    server:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        ports:
+            - "8080:8080" # Соответствует EXPOSE 8080 в Dockerfile
+        container_name: avito-backend-container
+        networks:
+            - app-network
+
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        ports:
+            - "3000:80" # Nginx слушает порт 80, мапим на 3000 на хосте
+        container_name: avito-frontend-container
+        depends_on:
+            - server
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
