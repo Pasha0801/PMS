@@ -9,22 +9,19 @@ type GetTasksOnBoardResponse = Pick<
 };
 
 export class BoardsController {
-  private queryServiceBoards: QueryService;
+  private queryService: QueryService;
 
   constructor(queryService: QueryService) {
-    this.queryServiceBoards = queryService;
+    this.queryService = queryService;
   }
 
   public async getBoards(signal?: AbortSignal) {
-    const boards = await this.queryServiceBoards.get<Board[]>(
-      '/boards',
-      signal,
-    );
+    const boards = await this.queryService.get<Board[]>('/boards', signal);
     return boards;
   }
 
   public async getTasksOnBoard(boardId: number, signal?: AbortSignal) {
-    const tasks = await this.queryServiceBoards.get<GetTasksOnBoardResponse[]>(
+    const tasks = await this.queryService.get<GetTasksOnBoardResponse[]>(
       `/boards/${boardId}`,
       signal,
     );

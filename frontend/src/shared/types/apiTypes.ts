@@ -34,11 +34,3 @@ export type Task = {
   status: Status;
   title: string;
 };
-
-export type UpdateTaskRequest = {
-  assigneeId: number;
-  description: string;
-  priority?: Priority;
-  status?: Status;
-  title: string;
-};

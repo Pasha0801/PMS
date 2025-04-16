@@ -1,10 +1,8 @@
-import axios, { AxiosInstance, isAxiosError } from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { ApiError } from '#shared/utils';
 
 export class QueryService {
-  private queryService: AxiosInstance;
-
-  private api = axios.create({
+  private queryService = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1',
     timeout: 3000,
     headers: {
@@ -12,9 +10,7 @@ export class QueryService {
     },
   });
 
-  constructor() {
-    this.queryService = this.api;
-  }
+  constructor() {}
 
   public async get<T>(
     url: string,
