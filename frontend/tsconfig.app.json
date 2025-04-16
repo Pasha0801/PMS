@@ -27,7 +27,6 @@
     "paths": {
       "#service/*": ["src/service/*"],
       "#controller/*": ["src/controller/*"],
-      "#viewModel/*": ["src/viewModel/*"],
       "#view/*": ["src/view/*"],
       "#shared/*": ["src/shared/*"]
     },
