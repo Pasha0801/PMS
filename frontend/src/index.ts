@@ -1,7 +1,3 @@
-import { renderView } from './view';
+import { renderApp } from './view';
 
-const init = () => {
-  renderView();
-};
-
-init();
+renderApp();
