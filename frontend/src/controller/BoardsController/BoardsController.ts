@@ -1,11 +1,22 @@
 import { QueryService, queryService } from '#service/QueryService';
-import { Board, AssigneeUserForTask, Task } from '#shared/types';
+import { User, Board, Priority, Status, Task } from '#shared/types';
+import { ApiError } from '#shared/utils';
 
-type GetTasksOnBoardResponse = Pick<
-  Task,
-  'description' | 'id' | 'priority' | 'status' | 'title'
-> & {
-  assignee: AssigneeUserForTask;
+// getBoards
+type GetBoardsResponse = {
+  data: Board[];
+};
+
+// getTasksOnBoard
+type GetTasksOnBoardResponse = {
+  data: {
+    id: number;
+    title: string;
+    description: string;
+    priority: Priority;
+    status: Status;
+    assignee: User;
+  }[];
 };
 
 export class BoardsController {
@@ -15,16 +26,38 @@ export class BoardsController {
     this.queryService = queryService;
   }
 
-  public async getBoards(signal?: AbortSignal) {
-    const boards = await this.queryService.get<Board[]>('/boards', signal);
-    return boards;
-  }
-
-  public async getTasksOnBoard(boardId: number, signal?: AbortSignal) {
-    const tasks = await this.queryService.get<GetTasksOnBoardResponse[]>(
-      `/boards/${boardId}`,
+  public async getBoards(signal?: AbortSignal): Promise<Board[] | ApiError> {
+    const res = await this.queryService.get<GetBoardsResponse>(
+      '/boards',
       signal,
     );
+
+    if (res instanceof ApiError) {
+      return res;
+    }
+
+    return res.data;
+  }
+
+  public async getTasksOnBoard(
+    board: Board,
+    signal?: AbortSignal,
+  ): Promise<Task[] | ApiError> {
+    const res = await this.queryService.get<GetTasksOnBoardResponse>(
+      `/boards/${board.id}`,
+      signal,
+    );
+
+    if (res instanceof ApiError) {
+      return res;
+    }
+
+    const tasks: Task[] = res.data.map((task) => ({
+      ...task,
+      boardId: board.id,
+      boardName: board.name,
+    }));
+
     return tasks;
   }
 }

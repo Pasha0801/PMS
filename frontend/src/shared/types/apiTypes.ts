@@ -17,20 +17,20 @@ export type Board = {
   taskCount: number;
 };
 
-export type AssigneeUserForTask = {
-  avatarUrl: string;
-  email: string;
-  fullName: string;
+export type User = {
   id: number;
+  fullName: string;
+  email: string;
+  avatarUrl: string;
 };
 
 export type Task = {
-  assignee: AssigneeUserForTask;
-  boardId: number;
-  boardName: string;
-  description: string;
   id: number;
+  title: string;
+  description: string;
   priority: Priority;
   status: Status;
-  title: string;
+  assignee: User;
+  boardId: number;
+  boardName: string;
 };

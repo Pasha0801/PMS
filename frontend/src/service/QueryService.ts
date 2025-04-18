@@ -1,4 +1,5 @@
 import axios, { isAxiosError } from 'axios';
+
 import { ApiError } from '#shared/utils';
 
 export class QueryService {
@@ -12,12 +13,12 @@ export class QueryService {
 
   constructor() {}
 
-  public async get<T>(
+  public async get<R>(
     url: string,
     signal?: AbortSignal,
-  ): Promise<T | ApiError> {
+  ): Promise<R | ApiError> {
     try {
-      const response = await this.queryService.get<T>(url, { signal });
+      const response = await this.queryService.get<R>(url, { signal });
       return response.data;
     } catch (error) {
       return this.createError(error);

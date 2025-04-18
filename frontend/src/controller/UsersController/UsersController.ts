@@ -1,41 +1,42 @@
 import { QueryService, queryService } from '#service/QueryService';
-import { AssigneeUserForTask, Task } from '#shared/types';
+import { User } from '#shared/types';
+import { ApiError } from '#shared/utils';
 
-type GetUsersResponse = Pick<
-  AssigneeUserForTask,
-  'avatarUrl' | 'email' | 'fullName' | 'id'
-> & {
-  description: string;
-  tasksCount: number;
-  teamId: number;
-  teamName: string;
+// getUsers
+type GetUsersResponse = {
+  data: {
+    avatarUrl: string;
+    email: string;
+    fullName: string;
+    id: number;
+    description: string;
+    tasksCount: number;
+    teamId: number;
+    teamName: string;
+  }[];
 };
 
-type GetUserTasksResponse = Pick<
-  Task,
-  'boardName' | 'description' | 'id' | 'priority' | 'status' | 'title'
->;
-
 export class UsersController {
-  private queryServiceUsers: QueryService;
+  private queryService: QueryService;
 
   constructor(queryService: QueryService) {
-    this.queryServiceUsers = queryService;
+    this.queryService = queryService;
   }
 
-  public async getUsers(signal?: AbortSignal) {
-    const users = await this.queryServiceUsers.get<GetUsersResponse[]>(
-      '/users',
-      signal,
-    );
-    return users;
-  }
+  public async getUsers(signal?: AbortSignal): Promise<User[] | ApiError> {
+    const res = await this.queryService.get<GetUsersResponse>('/users', signal);
 
-  public async getUserTasks(userId: number, signal?: AbortSignal) {
-    const users = await this.queryServiceUsers.get<GetUserTasksResponse[]>(
-      `users/${userId}/tasks`,
-      signal,
-    );
+    if (res instanceof ApiError) {
+      return res;
+    }
+
+    const users: User[] = res.data.map((user) => ({
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      avatarUrl: user.avatarUrl,
+    }));
+
     return users;
   }
 }

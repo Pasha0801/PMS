@@ -1,87 +1,146 @@
 import { QueryService, queryService } from '#service/QueryService';
 import { Task, Status, Priority } from '#shared/types';
+import { ApiError } from '#shared/utils';
 
-type CreateTaskResponse = {
+// getTasks
+type GetTasksResponse = {
+  data: Task[];
+};
+
+// createTask
+type CreateTaskRequest = {
+  boardId: number;
+  description: string;
+  priority: Priority;
+  title: string;
+  assigneeId: number;
+};
+
+type ID = {
   id: number;
 };
 
-type UpdateTaskResponse = {
-  message: string;
+type CreateTaskResponse = {
+  data: ID;
 };
 
-type UpdateTaskStatusResponse = {
-  message: string;
-};
-
-type CreateTaskRequest = Pick<
-  Task,
-  'boardId' | 'description' | 'priority' | 'title'
-> & { assigneeId: number };
-
-type GetTasksByIdRequest = {
-  taskId: number;
-};
-
-type UpdateTaskStatusRequest = Pick<Task, 'status'>;
-
-type GetTaskByIdResponse = Omit<Task, 'boardId'>;
-
-type UpdateTaskRequest = Pick<Task, 'description' | 'title'> & {
+// updateTask
+type UpdateTaskRequest = {
+  description: string;
+  title: string;
   assigneeId: number;
   priority?: Priority;
   status?: Status;
 };
 
+type Message = {
+  message: string;
+};
+
+type UpdateTaskResponse = {
+  data: Message;
+};
+
+// updateTaskStatus
+type UpdateTaskStatusRequest = {
+  status: Status;
+};
+
+type UpdateTaskStatusResponse = {
+  data: Message;
+};
+
 export class TaskController {
-  private queryServiceTasks: QueryService;
+  private queryService: QueryService;
 
   constructor(queryService: QueryService) {
-    this.queryServiceTasks = queryService;
+    this.queryService = queryService;
   }
 
-  public async getTasks(signal?: AbortSignal) {
-    const tasks = await this.queryServiceTasks.get<Task[]>('/tasks', signal);
-    return tasks;
+  public async getTasks(signal?: AbortSignal): Promise<Task[] | ApiError> {
+    const res = await this.queryService.get<GetTasksResponse>('/tasks', signal);
+
+    if (res instanceof ApiError) {
+      return res;
+    }
+
+    return res.data;
   }
 
-  public async getTaskById(taskId: GetTasksByIdRequest, signal?: AbortSignal) {
-    const task = await this.queryServiceTasks.get<GetTaskByIdResponse>(
-      `/tasks/${taskId}`,
-      signal,
-    );
-    return task;
-  }
+  public async createTask(
+    task: Task,
+    signal?: AbortSignal,
+  ): Promise<ID | ApiError> {
+    const createTaskData: CreateTaskRequest = {
+      boardId: task.boardId,
+      description: task.description,
+      priority: task.priority,
+      title: task.title,
+      assigneeId: task.assignee.id,
+    };
 
-  public async createTask(task: CreateTaskRequest, signal?: AbortSignal) {
-    const resultCreateTask = await this.queryServiceTasks.post<
+    const res = await this.queryService.post<
       CreateTaskRequest,
       CreateTaskResponse
-    >('/tasks/create', task, signal);
-    return resultCreateTask;
+    >('/tasks/create', createTaskData, signal);
+
+    if (res instanceof ApiError) {
+      return res;
+    }
+
+    return res.data;
   }
 
   public async updateTask(
-    taskId: number,
-    task: UpdateTaskRequest,
+    task: Task,
     signal?: AbortSignal,
-  ) {
-    const resultUpdateTask = await this.queryServiceTasks.put<
+  ): Promise<Message | ApiError> {
+    const updateTaskData: UpdateTaskRequest = {
+      description: task.description,
+      title: task.title,
+      assigneeId: task.assignee.id,
+      priority: task.priority,
+      status: task.status,
+    };
+
+    const res = await this.queryService.put<
       UpdateTaskRequest,
       UpdateTaskResponse
-    >(`/tasks/${taskId}`, task, signal);
-    return resultUpdateTask;
+    >(`/tasks/${task.id}`, updateTaskData, signal);
+
+    if (res instanceof ApiError) {
+      return res;
+    }
+
+    return res.data;
   }
 
   public async updateTaskStatus(
-    taskId: number,
-    status: UpdateTaskStatusRequest,
+    task: Task,
     signal?: AbortSignal,
-  ) {
-    const resultUpdateTaskStatus = await this.queryServiceTasks.put<
+  ): Promise<Message | ApiError> {
+    const updateTaskStatusData: UpdateTaskStatusRequest = {
+      status: task.status,
+    };
+
+    const res = await this.queryService.put<
       UpdateTaskStatusRequest,
       UpdateTaskStatusResponse
-    >(`/tasks/updateStatus/${taskId}`, status, signal);
-    return resultUpdateTaskStatus;
+    >(`/tasks/updateStatus/${task.id}`, updateTaskStatusData, signal);
+
+    if (res instanceof ApiError) {
+      return res;
+    }
+
+    return res.data;
+  }
+
+  public get priorities() {
+    return [Priority.Low, Priority.Medium, Priority.High];
+  }
+
+  public get statuses() {
+    return [Status.Backlog, Status.InProgress, Status.Done];
   }
 }
 
