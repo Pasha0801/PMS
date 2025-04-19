@@ -120,7 +120,7 @@ export default tseslint.config(
           zones: [
             {
               target: './src/view',
-              from: ['./src/service', './src/controller'],
+              from: ['./src/service'],
               message: appArchitecturalError,
             },
             {
