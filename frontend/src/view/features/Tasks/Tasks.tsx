@@ -2,12 +2,11 @@ import { Box, Grid } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
 import { Filter, Search, TasksColumn } from './components';
-import { TasksModel } from './model';
-
 import {
   TASKS_COLUMN_HEIGHT,
   TASKS_FILTER_SEARCH_BOX_HEIGHT,
 } from './constants';
+import { TasksModel } from './model';
 
 type TasksComponentProps = {
   model: TasksModel;

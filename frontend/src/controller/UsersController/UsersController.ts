@@ -17,14 +17,10 @@ type GetUsersResponse = {
 };
 
 export class UsersController {
-  private queryService: QueryService;
+  constructor(private queryService: QueryService) {}
 
-  constructor(queryService: QueryService) {
-    this.queryService = queryService;
-  }
-
-  public async getUsers(signal?: AbortSignal): Promise<User[] | ApiError> {
-    const res = await this.queryService.get<GetUsersResponse>('/users', signal);
+  public async getUsers(): Promise<User[] | ApiError> {
+    const res = await this.queryService.get<GetUsersResponse>('/users');
 
     if (res instanceof ApiError) {
       return res;

@@ -3,6 +3,7 @@ import { makeAutoObservable } from 'mobx';
 import { boardsController } from '#controller/BoardsController';
 import { tasksController } from '#controller/TasksController';
 import { usersController } from '#controller/UsersController';
+import { Board, Task } from '#shared/types';
 import { ApiError } from '#shared/utils';
 import { appModel } from '#view/app/model';
 
@@ -13,7 +14,6 @@ import {
   TaskDialogForm,
   TaskDialogModelProps,
 } from './types';
-import { Board, Task } from '#shared/types';
 
 export class TaskDialogModel {
   private readonly appModel = appModel;

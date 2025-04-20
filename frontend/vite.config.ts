@@ -17,7 +17,12 @@ export default defineConfig(({ mode }) => {
         '#shared': path.resolve(__dirname, 'src/shared'),
       },
     },
-
+    test: {
+      environment: 'node',
+      globals: true,
+      include: ['**/*.test.ts'],
+      reporters: ['verbose'],
+    },
     server: {
       host: true,
       port: parseInt(env.VITE_PORT, 10),

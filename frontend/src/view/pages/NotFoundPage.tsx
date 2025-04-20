@@ -1,5 +1,6 @@
-import { Layout } from '#view/shared/components';
 import { Box, Typography } from '@mui/material';
+
+import { Layout } from '#view/shared/components';
 
 export const NotFoundPage = () => {
   return (

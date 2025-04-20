@@ -1,3 +1,5 @@
+cd frontend
+
 npm run lint-check
 echo -e "\x1b[32m Lint OK \x1b[0m"
 
@@ -6,3 +8,6 @@ echo -e "\x1b[32m Prettier OK \x1b[0m"
 
 npm run type-check
 echo -e "\x1b[32m Typecheck OK \x1b[0m"
+
+npm run test
+echo -e "\x1b[32m Test OK \x1b[0m"

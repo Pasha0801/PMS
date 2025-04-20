@@ -1,0 +1,12 @@
+{
+    "name": "Project-Managment-system",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+      "prepare": "husky"
+    },
+    "devDependencies": {
+      "husky": "^9.1.7"
+    }
+  }

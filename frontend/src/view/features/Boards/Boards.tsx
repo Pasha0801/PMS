@@ -1,9 +1,7 @@
+import { Box, Grid } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
-import { Box, Grid } from '@mui/material';
-
 import { BoardsColumn } from './components';
-
 import { BoardsModel } from './model';
 
 type BoardsComponentProps = {

@@ -1,5 +1,3 @@
-import { observer } from 'mobx-react-lite';
-
 import {
   AppBar,
   Toolbar,
@@ -8,6 +6,7 @@ import {
   Box,
   Container,
 } from '@mui/material';
+import { observer } from 'mobx-react-lite';
 
 import { HeaderModel } from './model';
 

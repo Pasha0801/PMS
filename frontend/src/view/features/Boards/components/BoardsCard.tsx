@@ -1,5 +1,6 @@
-import { Board } from '#shared/types';
 import { Typography, Card, CardContent, Box } from '@mui/material';
+
+import { Board } from '#shared/types';
 
 type CardElementProps = {
   board: Board;

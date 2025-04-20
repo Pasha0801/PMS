@@ -1,5 +1,7 @@
 import { Box, Paper, Grid } from '@mui/material';
+
 import { Board } from '#shared/types';
+
 import { BoardsCard } from './BoardsCard';
 
 type BoardsColumnProps = {
