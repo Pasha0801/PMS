@@ -59,7 +59,7 @@ export const BoardColumn = ({
           padding={2}
           zIndex={10}
           bgcolor="background.paper"
-          variant="h6"
+          fontWeight={500}
           align="left"
           sx={{
             paddingBottom: 1,

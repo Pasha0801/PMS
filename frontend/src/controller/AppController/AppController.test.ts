@@ -3,6 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 import { QueryService } from '#service/QueryService';
+import { storageService } from '#service/StorageService';
 import { ApiError } from '#shared/utils';
 
 import { AppController } from './AppController';
@@ -31,7 +32,7 @@ describe('AppController', () => {
     mock = new MockAdapter(axiosInstance);
 
     // Создаем AppController с QueryService
-    appController = new AppController(queryService);
+    appController = new AppController(queryService, storageService);
   });
 
   afterEach(() => {

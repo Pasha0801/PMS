@@ -1,7 +1,8 @@
 import { Box, Grid } from '@mui/material';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 
-import { Preloader, Error } from '#view/shared';
+import { Board } from '#shared/types';
 
 import { BoardsColumn } from './components';
 import { BoardsModel } from './model';
@@ -11,14 +12,6 @@ type BoardsComponentProps = {
 };
 
 const BoardsComponent = observer(({ model }: BoardsComponentProps) => {
-  if (model.isLoading) {
-    return <Preloader />;
-  }
-
-  if (model.isError) {
-    return <Error onClick={model.navigateTasksPage} />;
-  }
-
   return (
     <Box height={'100%'} padding={1} sx={{ pt: 2, pb: 3 }}>
       <Grid height={'100%'}>
@@ -31,7 +24,11 @@ const BoardsComponent = observer(({ model }: BoardsComponentProps) => {
   );
 });
 
-export const Boards = () => {
-  const model = new BoardsModel();
-  return <BoardsComponent model={model} />;
+export type BoardsProps = {
+  boards: Board[];
 };
+
+export const Boards = React.memo((props: BoardsProps) => {
+  const model = new BoardsModel(props);
+  return <BoardsComponent model={model} />;
+});

@@ -1,10 +1,11 @@
 import { makeAutoObservable } from 'mobx';
 
+import { appController } from '#controller/AppController';
 import { boardsController } from '#controller/BoardsController';
 import { tasksController } from '#controller/TasksController';
 import { usersController } from '#controller/UsersController';
-import { Board, Task } from '#shared/types';
-import { ApiError } from '#shared/utils';
+import { Board, Nullable, Status, Task } from '#shared/types';
+import { ApiError, StorageError } from '#shared/utils';
 import { appModel } from '#view/app/model';
 
 import { DEFAULT_CONTROLS, DEFAULT_FORM } from './constants';
@@ -17,6 +18,7 @@ import {
 
 export class TaskDialogModel {
   private readonly appModel = appModel;
+  private readonly appController = appController;
   private readonly tasksController = tasksController;
   private readonly boardsController = boardsController;
   private readonly usersController = usersController;
@@ -47,16 +49,17 @@ export class TaskDialogModel {
   ) => {
     this.form[field].value = value;
     this.validate();
-    // TODO сохранение в localstorage
+
+    this.appController.storageSetCreateTaskData(this.task[1]);
   };
 
   // Приватные методы
 
   /** Вызов создания задачи из кнопки подтвердить */
   private submitCreate = async () => {
-    const task = this.task;
+    const [isValid, task] = this.task;
 
-    if (task === null) {
+    if (!isValid) {
       this.controls.buttonSubmit.isError = true;
       this.controls.buttonSubmit.errorText = 'Поля заполнены неверно';
       return;
@@ -73,6 +76,7 @@ export class TaskDialogModel {
       this.controls.buttonSubmit.isError = false;
       this.controls.buttonSubmit.errorText = '';
       this.close();
+      this.appController.storageClearCreateTaskData();
       this.props.onSuccess();
     }
 
@@ -81,9 +85,9 @@ export class TaskDialogModel {
 
   /** Вызов обновления задачи из кнопки подтвердить */
   private submitUpdate = async () => {
-    const task = this.task;
+    const [isValid, task] = this.task;
 
-    if (task === null) {
+    if (!isValid) {
       this.controls.buttonSubmit.isError = true;
       this.controls.buttonSubmit.errorText = 'Поля заполнены неверно';
       return;
@@ -107,7 +111,7 @@ export class TaskDialogModel {
   };
 
   /** Возвращает Task из полей формы. Null если поля некорректны*/
-  private get task(): Task | null {
+  private get task(): [true, Task] | [false, Nullable<Task>] {
     const title = this.form.title.value;
     const description = this.form.description.value;
     const assignee = this.form.assignee.value;
@@ -116,21 +120,34 @@ export class TaskDialogModel {
     const status = this.form.status.value;
 
     if (!title || !description || !assignee || !board || !priority || !status) {
-      return null;
+      return [
+        false,
+        {
+          id: this.props.task?.id ?? -1,
+          title,
+          description,
+          assignee,
+          boardId: board?.id ?? null,
+          boardName: board?.name ?? null,
+          priority,
+          status,
+        },
+      ];
     }
 
-    const task: Task = {
-      id: this.props.task?.id ?? -1,
-      title,
-      description,
-      assignee,
-      boardId: board.id,
-      boardName: board.name,
-      priority,
-      status,
-    };
-
-    return task;
+    return [
+      true,
+      {
+        id: this.props.task?.id ?? -1,
+        title,
+        description,
+        assignee,
+        boardId: board.id,
+        boardName: board.name,
+        priority,
+        status,
+      },
+    ];
   }
 
   /** Валидация всех полей формы */
@@ -138,10 +155,10 @@ export class TaskDialogModel {
     let formHasErrors = false;
 
     const fields = Object.keys(this.form) as TaskDialogField[];
-
     fields.forEach((field) => {
       const value = this.form[field].value;
-      if (!value) {
+
+      if (value === null) {
         this.form[field].isError = true;
         this.form[field].errorText = 'Поле не может быть пустым';
         formHasErrors = true;
@@ -156,19 +173,38 @@ export class TaskDialogModel {
 
   /** Установка значений формы из пропсов */
   private initDialogData = () => {
-    const { type, task, board, disableFieldBoard, showButtonToBoard } =
-      this.props;
+    const { type, board, disableFieldBoard, showButtonToBoard } = this.props;
     const isEdit = type === 'edit';
 
+    const getTask = (): [boolean, Nullable<Task> | null] => {
+      if (isEdit) {
+        return [false, this.props.task];
+      }
+
+      const storageTask = this.appController.storageGetCreateTaskData();
+
+      if (storageTask instanceof StorageError) {
+        return [false, this.props.task];
+      }
+
+      return [true, storageTask];
+    };
+
+    const [fromLocalStorage, task] = getTask();
+
+    this.initFieldAssignee(task);
+    this.initFieldBoard(task, board, disableFieldBoard);
     this.initTitle(isEdit);
     this.initButtonSubmit(isEdit);
     this.initButtonToBoard(showButtonToBoard, board, task);
     this.initFieldTitle(task);
     this.initFieldDescription(task);
-    this.initFieldStatus(task);
+    this.initFieldStatus(isEdit, task);
     this.initFieldPriority(task);
-    this.initFieldAssignee(task);
-    this.initFieldBoard(task, board, disableFieldBoard);
+
+    if (fromLocalStorage) {
+      this.validate();
+    }
   };
 
   /** Установка значения заголовка диалога */
@@ -188,7 +224,7 @@ export class TaskDialogModel {
   private initButtonToBoard = (
     showButtonToBoard: boolean,
     board: Board | null,
-    task: Task | null,
+    task: Nullable<Task> | null,
   ) => {
     if (!showButtonToBoard || (!board && !task)) {
       return;
@@ -197,36 +233,41 @@ export class TaskDialogModel {
     this.controls.buttonToBoard.show = true;
     this.controls.buttonToBoard.onClick = () => {
       this.close();
-      this.appModel.router.navigate(`/board/${String(board?.id ?? task?.id)}`);
+      this.appModel.router.navigate(
+        `/board/${String(board?.id ?? task?.boardId)}`,
+      );
     };
   };
 
   /** Установка значения поля Название */
-  private initFieldTitle = (task: Task | null) => {
+  private initFieldTitle = (task: Nullable<Task> | null) => {
     if (task) {
       this.form.title.value = task.title;
     }
   };
 
   /** Установка значения поля Описание */
-  private initFieldDescription = (task: Task | null) => {
+  private initFieldDescription = (task: Nullable<Task> | null) => {
     if (task) {
       this.form.description.value = task.description;
     }
   };
 
   /** Установка значения поля Статус */
-  private initFieldStatus = (task: Task | null) => {
+  private initFieldStatus = (isEdit: boolean, task: Nullable<Task> | null) => {
     const statusOptions = this.tasksController.statuses;
     this.form.status.options = statusOptions;
 
-    if (task) {
-      this.form.status.value = task.status;
+    if (isEdit) {
+      this.form.status.value = task?.status ?? Status.Backlog;
+    } else {
+      this.form.status.value = Status.Backlog;
+      this.form.status.isDisabled = true;
     }
   };
 
   /** Установка значения поля Приоритет */
-  private initFieldPriority = (task: Task | null) => {
+  private initFieldPriority = (task: Nullable<Task> | null) => {
     const priorityOptions = this.tasksController.priorities;
     this.form.priority.options = priorityOptions;
 
@@ -236,7 +277,7 @@ export class TaskDialogModel {
   };
 
   /** Установка значения поля Исполнитель. С запросом данных */
-  private initFieldAssignee = async (task: Task | null) => {
+  private initFieldAssignee = async (task: Nullable<Task> | null) => {
     this.form.assignee.isLoading = true;
 
     const assigneeOptions = await this.usersController.getUsers();
@@ -244,7 +285,6 @@ export class TaskDialogModel {
     if (assigneeOptions instanceof ApiError) {
       this.form.assignee.isError = true;
       this.form.assignee.errorText = 'Ошибка при загрузке данных';
-      console.error(assigneeOptions.text);
     } else {
       this.form.assignee.options = assigneeOptions;
     }
@@ -253,12 +293,17 @@ export class TaskDialogModel {
       this.form.assignee.value = task.assignee;
     }
 
+    if (this.form.assignee.value !== null) {
+      this.form.assignee.isError = false;
+      this.form.assignee.errorText = '';
+    }
+
     this.form.assignee.isLoading = false;
   };
 
   /** Установка значения поля Доска. С запросом данных */
   private initFieldBoard = async (
-    task: Task | null,
+    task: Nullable<Task> | null,
     board: Board | null,
     disableFieldBoard: boolean,
   ) => {
@@ -272,7 +317,6 @@ export class TaskDialogModel {
     if (boardOptions instanceof ApiError) {
       this.form.board.isError = true;
       this.form.board.errorText = 'Ошибка при загрузке данных';
-      console.error(boardOptions.text);
     } else {
       this.form.board.options = boardOptions;
     }
@@ -282,10 +326,15 @@ export class TaskDialogModel {
     } else if (task) {
       this.form.board.value = {
         description: '',
-        id: task.boardId,
-        name: task.boardName,
+        id: task?.boardId ?? -1,
+        name: task?.boardName ?? '',
         taskCount: -1,
       };
+    }
+
+    if (this.form.board.value !== null) {
+      this.form.board.isError = false;
+      this.form.board.errorText = '';
     }
 
     this.form.board.isLoading = false;

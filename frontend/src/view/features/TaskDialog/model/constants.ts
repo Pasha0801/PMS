@@ -33,6 +33,7 @@ export const DEFAULT_FORM: TaskDialogForm = {
     label: 'Статус',
     value: null,
     options: [],
+    isDisabled: false,
     isError: false,
     errorText: '',
   },

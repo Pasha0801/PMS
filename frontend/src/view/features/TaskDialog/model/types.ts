@@ -59,6 +59,7 @@ export type TaskDialogForm = {
     label: string;
     value: Status | null;
     options: Status[];
+    isDisabled: boolean;
     isError: boolean;
     errorText: string;
   };

@@ -1,10 +1,11 @@
 import { Box, Grid, Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
+import { Task, Board as BoardType } from '#shared/types';
 import { BoardModel } from '#view/features/';
-import { Preloader, Error } from '#view/shared';
 
 import { BoardColumn } from './component';
 import {
@@ -18,13 +19,6 @@ type BoardComponentProps = {
 };
 
 const BoardComponent = observer(({ model }: BoardComponentProps) => {
-  if (model.isLoading) {
-    return <Preloader />;
-  }
-  if (model.isError) {
-    return <Error onClick={model.navigateTasksPage} />;
-  }
-
   const handleDrop = async (
     taskId: number,
     sourceColumn: 'taskToDo' | 'taskInProgress' | 'taskDone',
@@ -43,7 +37,7 @@ const BoardComponent = observer(({ model }: BoardComponentProps) => {
     <DndProvider backend={HTML5Backend}>
       <Box height={'100%'} sx={{ padding: 2 }}>
         <Typography variant="h6" ml={2} height={BOARD_TITLE_HEIGHT}>
-          {model.titleBoard}
+          {model.board.name}
         </Typography>
         <Grid container spacing={2} height={BOARD_COLUMN_HEIGHT}>
           <BoardColumn
@@ -76,7 +70,13 @@ const BoardComponent = observer(({ model }: BoardComponentProps) => {
   );
 });
 
-export const Board = () => {
-  const model = new BoardModel();
-  return <BoardComponent model={model} />;
+export type BoardProps = {
+  board: BoardType;
+  tasks: Task[];
+  getBoardTasks: VoidFunction;
 };
+
+export const Board = React.memo((props: BoardProps) => {
+  const model = new BoardModel(props);
+  return <BoardComponent model={model} />;
+});

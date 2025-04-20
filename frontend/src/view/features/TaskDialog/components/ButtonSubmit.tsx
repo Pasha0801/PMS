@@ -1,4 +1,9 @@
-import { Button, FormControl, FormHelperText, IconButton } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  FormControl,
+  FormHelperText,
+} from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
 import { TaskDialogModel } from '../model';
@@ -19,7 +24,7 @@ export const ButtonSubmit = observer(({ model }: ButtonSubmitProps) => {
       >
         {model.controls.buttonSubmit.text}
         {model.controls.buttonSubmit.isLoading && (
-          <IconButton loading sx={{ ml: 2 }} />
+          <CircularProgress size={15} sx={{ ml: 2 }} />
         )}
       </Button>
       <FormHelperText error={model.controls.buttonSubmit.isError}>

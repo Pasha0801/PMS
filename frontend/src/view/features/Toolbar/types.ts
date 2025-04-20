@@ -22,3 +22,11 @@ export type Filter = {
 };
 
 export type FilterField = keyof Filter;
+
+export type ToolbarOnChange = {
+  search: Search['value'];
+  filter: {
+    status: Filter['status']['value'];
+    board: Filter['board']['value'];
+  };
+};

@@ -32,7 +32,9 @@ export class BoardsController {
     return res.data;
   }
 
-  public async getTasksOnBoard(boardId: number): Promise<Task[] | ApiError> {
+  public async getTasksOnBoard(
+    boardId: number,
+  ): Promise<{ tasks: Task[]; board: Board } | ApiError> {
     const res = await this.queryService.get<GetTasksOnBoardResponse>(
       `/boards/${boardId}`,
     );
@@ -41,16 +43,16 @@ export class BoardsController {
       return res;
     }
 
-    const boards = await this.getBoards();
+    const boardsRes = await this.getBoards();
 
-    if (boards instanceof ApiError) {
-      return [];
+    if (boardsRes instanceof ApiError) {
+      return boardsRes;
     }
 
-    const board = boards.find(({ id }) => id === boardId);
+    const board = boardsRes.find(({ id }) => id === boardId);
 
     if (!board) {
-      return [];
+      return new ApiError('Board not found');
     }
 
     const tasks: Task[] = res.data.map((task) => ({
@@ -59,7 +61,7 @@ export class BoardsController {
       boardName: board.name,
     }));
 
-    return tasks;
+    return { tasks, board };
   }
 }
 

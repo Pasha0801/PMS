@@ -1,32 +1,32 @@
 import {
   Box,
+  CircularProgress,
   FormControl,
   FormHelperText,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
 } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
-import { TasksModel } from '../model';
+import { ToolbarModel } from '../model';
 
 type FilterProps = {
-  model: TasksModel;
+  model: ToolbarModel;
 };
 
 export const Filter = observer(({ model }: FilterProps) => {
   return (
-    <Box display="flex" gap={1} width={'500px'}>
+    <Box display="flex" gap={1} width={'500px'} mr={1}>
       <FormControl
-        variant="filled"
+        variant="standard"
         disabled={model.filter.board.isLoading}
         fullWidth
       >
         <InputLabel id="board">
           {model.filter.board.label}
           {model.filter.board.isLoading && (
-            <IconButton loading sx={{ ml: 2 }} />
+            <CircularProgress size={15} sx={{ ml: 2 }} />
           )}
         </InputLabel>
         <Select value={model.filter.board.value?.id ?? ''} labelId="board">
@@ -45,7 +45,7 @@ export const Filter = observer(({ model }: FilterProps) => {
         </FormHelperText>
       </FormControl>
 
-      <FormControl variant="filled" fullWidth>
+      <FormControl variant="standard" fullWidth>
         <InputLabel id="status">{model.filter.status.label}</InputLabel>
         <Select value={model.filter.status.value ?? ''} labelId="status">
           {model.filter.status.options.map((status) => (

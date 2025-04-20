@@ -1,3 +1,3 @@
 export * from './Layout';
-export * from './Preloader';
 export * from './Error';
+export * from './Preloader';
