@@ -40,17 +40,25 @@ export class BoardsController {
   }
 
   public async getTasksOnBoard(
-    board: Board,
+    boardId: number,
     signal?: AbortSignal,
   ): Promise<Task[] | ApiError> {
     const res = await this.queryService.get<GetTasksOnBoardResponse>(
-      `/boards/${board.id}`,
+      `/boards/${boardId}`,
       signal,
     );
 
     if (res instanceof ApiError) {
       return res;
     }
+
+    const boards = await this.getBoards();
+
+    if (boards instanceof ApiError) {
+      return [];
+    }
+
+    const [board] = boards.filter(({ id }) => id === boardId);
 
     const tasks: Task[] = res.data.map((task) => ({
       ...task,

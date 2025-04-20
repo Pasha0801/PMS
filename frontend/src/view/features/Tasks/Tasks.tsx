@@ -1,21 +1,16 @@
-import { observer } from 'mobx-react-lite';
-import { ReactNode, useState } from 'react';
-
 import { Box, Grid } from '@mui/material';
+import { observer } from 'mobx-react-lite';
 
 import { ColumnItem } from '#view/shared/components';
 
-const initialTasks = {
-  projects: ['Купить молоко', 'Сделать зарядку', 'Купить молоко'],
+import { Filter, Search } from './components';
+import { TasksModel } from './model';
+
+type TasksComponentProps = {
+  model: TasksModel;
 };
 
-type TasksProps = {
-  children: ReactNode;
-};
-
-export const Tasks = observer(function Tasks({ children }: TasksProps) {
-  const [tasks] = useState(initialTasks);
-
+const TasksComponent = observer(({ model }: TasksComponentProps) => {
   return (
     <Box
       height={'100%'}
@@ -23,10 +18,28 @@ export const Tasks = observer(function Tasks({ children }: TasksProps) {
       flexDirection={'column'}
       sx={{ padding: 1 }}
     >
-      {children}
+      <Box
+        display={'flex'}
+        justifyContent={'space-between'}
+        m={1}
+        height={'60px'}
+      >
+        <Search model={model} />
+        <Filter model={model} />
+      </Box>
       <Grid height={'calc(100% - 80px)'}>
-        <ColumnItem items={tasks.projects} buttonColumn={true} />
+        <ColumnItem
+          items={model.tasks}
+          buttonColumn={true}
+          onClickButtonColumn={() => model.createNewTask()}
+          onClickCard={(task) => model.editTask(task)}
+        />
       </Grid>
     </Box>
   );
 });
+
+export const Tasks = () => {
+  const model = new TasksModel();
+  return <TasksComponent model={model} />;
+};

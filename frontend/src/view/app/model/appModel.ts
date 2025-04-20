@@ -7,7 +7,7 @@ configure({
   enforceActions: 'never',
 });
 
-class AppModel {
+export class AppModel {
   public readonly dialog = dialogModel;
   public readonly router = routerModel;
 
