@@ -1,11 +1,10 @@
 import { makeAutoObservable } from 'mobx';
-import { TaskDialog, TaskDialogModelProps } from '#view/features/TaskDialog';
 
 import { appModel } from '#view/app';
+import { TaskDialog, TaskDialogModelProps } from '#view/features/TaskDialog';
 
 export class HeaderModel {
   private readonly appModel = appModel;
-  private currentLocation = this.appModel.router.getCurrentLocation();
 
   constructor() {
     makeAutoObservable(this);

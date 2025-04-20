@@ -1,7 +1,8 @@
-import { BoardTaskCard } from './BoardTaskCard';
-
 import { Box, Typography, Paper, Grid } from '@mui/material';
+
 import { Task } from '#shared/types';
+
+import { BoardTaskCard } from './BoardTaskCard';
 
 type BoardColumnProps = {
   items: Task[];

@@ -67,7 +67,6 @@ export default tseslint.config(
       eqeqeq: ['error', 'always'],
       'prefer-const': 'error',
       'consistent-return': 'error',
-      'no-magic-numbers': ['warn', { ignore: [-1, 0, 1] }],
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',

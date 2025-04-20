@@ -1,5 +1,6 @@
-import { Task } from '#shared/types';
 import { Typography, Card, CardContent } from '@mui/material';
+
+import { Task } from '#shared/types';
 
 type TasksTaskCardProps = {
   task: Task;

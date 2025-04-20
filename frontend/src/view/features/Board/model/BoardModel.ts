@@ -1,11 +1,12 @@
 import { makeAutoObservable } from 'mobx';
+
 import {
   BoardsController,
   boardsController,
 } from '#controller/BoardsController';
 import { Task } from '#shared/types';
-import { appModel } from '#view/app';
 import { ApiError } from '#shared/utils';
+import { appModel } from '#view/app';
 import { TaskDialog, TaskDialogModelProps } from '#view/features/TaskDialog';
 
 export class BoardModel {

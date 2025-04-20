@@ -2,6 +2,7 @@ import { makeAutoObservable } from 'mobx';
 import { ReactNode } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router';
 
+import { appController } from '#controller/AppController';
 import { BoardPage, BoardsPage, TasksPage, NotFoundPage } from '#view/pages';
 
 class RouterModel {
@@ -14,6 +15,7 @@ class RouterModel {
   }
 
   public navigate = (path: string) => {
+    appController.abortAll();
     if (this.router) {
       this.router.navigate(path);
     }
