@@ -34,9 +34,15 @@ export class BoardsModel {
     }
   };
 
-  /**Private  */
+  /**Public  */
+  /** переход на страницу доски  */
   public navigateBoard = (boardId: number) => {
     const path = '/board/' + boardId;
     this.appModel.router.navigate(path);
+  };
+
+  /** переход на страницу всех задач, если ошибка загрузки данных  */
+  public navigateTasksPage = () => {
+    appModel.router.navigate('/issues');
   };
 }

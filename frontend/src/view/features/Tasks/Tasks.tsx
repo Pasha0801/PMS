@@ -1,6 +1,8 @@
 import { Box, Grid } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
+import { Preloader, Error } from '#view/shared';
+
 import { Filter, Search, TasksColumn } from './components';
 import {
   TASKS_COLUMN_HEIGHT,
@@ -13,6 +15,19 @@ type TasksComponentProps = {
 };
 
 const TasksComponent = observer(({ model }: TasksComponentProps) => {
+  if (model.isLoading) {
+    return <Preloader />;
+  }
+
+  if (model.isError) {
+    return (
+      <Error
+        onClick={model.navigateBoardsPage}
+        buttonTitle="Перейти ко всем доскам"
+      />
+    );
+  }
+
   return (
     <Box
       height={'100%'}
