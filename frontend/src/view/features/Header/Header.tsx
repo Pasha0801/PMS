@@ -49,11 +49,7 @@ const HeaderComponent = observer(({ model }: HeaderComponentProps) => {
             </Typography>
           </Box>
           <Box sx={{ flexGrow: 1 }} />
-          <Button
-            onClick={() => model.createNewTask()}
-            variant="contained"
-            color="primary"
-          >
+          <Button onClick={() => model.createNewTask()} variant="contained">
             <Typography
               variant="h5"
               sx={{

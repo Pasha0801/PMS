@@ -1,0 +1,2 @@
+export const TASKS_FILTER_SEARCH_BOX_HEIGHT = '60px';
+export const TASKS_COLUMN_HEIGHT = `calc(100% - 90px - ${TASKS_FILTER_SEARCH_BOX_HEIGHT})`;

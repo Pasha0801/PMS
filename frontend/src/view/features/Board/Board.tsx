@@ -1,6 +1,8 @@
 import { observer } from 'mobx-react-lite';
-import { ColumnItem } from '#view/shared/components';
 import { BoardModel } from '#view/features/';
+
+import { BoardColumn } from './component';
+import { BOARD_TITLE_COLUMN } from './constants';
 
 import { Box, Grid } from '@mui/material';
 
@@ -12,20 +14,20 @@ const BoardComponent = observer(({ model }: BoardComponentProps) => {
   return (
     <Box height={'100%'} sx={{ padding: 2 }}>
       <Grid container spacing={2} height={'100%'}>
-        <ColumnItem
+        <BoardColumn
           items={model.taskToDo}
-          // onClickCard={handleClick}
-          title="To Do"
+          title={BOARD_TITLE_COLUMN.todo}
+          onClickTask={model.editTask}
         />
-        <ColumnItem
+        <BoardColumn
           items={model.taskInProgress}
-          // onClickCard={handleClick}
-          title="In Progress"
+          title={BOARD_TITLE_COLUMN.inProgress}
+          onClickTask={model.editTask}
         />
-        <ColumnItem
+        <BoardColumn
           items={model.taskDone}
-          // onClickCard={handleClick}
-          title="Done"
+          title={BOARD_TITLE_COLUMN.done}
+          onClickTask={model.editTask}
         />
       </Grid>
     </Box>
