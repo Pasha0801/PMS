@@ -1,10 +1,10 @@
 import {
+  CircularProgress,
   FormControl,
   FormHelperText,
   InputLabel,
   MenuItem,
   Select,
-  IconButton,
 } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
@@ -22,7 +22,9 @@ export const FieldBoard = observer(({ model }: FieldBoardProps) => {
     >
       <InputLabel id="board">
         {model.form.board.label}
-        {model.form.board.isLoading && <IconButton loading sx={{ ml: 2 }} />}
+        {model.form.board.isLoading && (
+          <CircularProgress size={15} sx={{ ml: 2 }} />
+        )}
       </InputLabel>
       <Select value={model.form.board.value?.id ?? ''} labelId="board">
         {model.form.board.options.map((board) => (

@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { QueryService } from '#service/QueryService';
-import { Board, Priority, Status, Task } from '#shared/types';
+import { Board } from '#shared/types';
 import { ApiError } from '#shared/utils';
 
 import { BoardsController } from './BoardsController';
@@ -20,39 +20,6 @@ describe('BoardsController', () => {
       name: 'Project B',
       description: 'Secondary project',
       taskCount: 1,
-    },
-  ];
-
-  const mockTasks: Task[] = [
-    {
-      id: 101,
-      title: 'Task 1',
-      description: 'First task',
-      priority: Priority.High,
-      status: Status.Backlog,
-      assignee: {
-        id: 1,
-        fullName: 'John Doe',
-        email: 'john@example.com',
-        avatarUrl: 'https://example.com/avatar1.jpg',
-      },
-      boardId: 1,
-      boardName: 'Project A',
-    },
-    {
-      id: 102,
-      title: 'Task 2',
-      description: 'Second task',
-      priority: Priority.Medium,
-      status: Status.InProgress,
-      assignee: {
-        id: 2,
-        fullName: 'Jane Smith',
-        email: 'jane@example.com',
-        avatarUrl: 'https://example.com/avatar2.jpg',
-      },
-      boardId: 1,
-      boardName: 'Project A',
     },
   ];
 
@@ -112,14 +79,28 @@ describe('BoardsController', () => {
 
   describe('getTasksOnBoard', () => {
     const boardId = 1;
+    const mockBoard = { id: boardId, name: 'Test Board' };
+    const mockTasks = [
+      { id: 1, title: 'Task 1' },
+      { id: 2, title: 'Task 2' },
+    ];
+    const mockBoards = [mockBoard];
 
-    it('должен возвращать массив задач с boardId и boardName', async () => {
+    it('должен возвращать объект с задачами и доской при успешном запросе', async () => {
       mock.onGet(`/boards/${boardId}`).reply(200, { data: mockTasks });
+      mock.onGet('/boards').reply(200, { data: mockBoards });
 
       const result = await controller.getTasksOnBoard(boardId);
 
-      expect(result).toEqual(mockTasks);
       expect(result).not.toBeInstanceOf(ApiError);
+      expect(result).toEqual({
+        tasks: mockTasks.map((task) => ({
+          ...task,
+          boardId: mockBoard.id,
+          boardName: mockBoard.name,
+        })),
+        board: mockBoard,
+      });
     });
 
     it('должен возвращать ApiError при ошибке запроса задач', async () => {
@@ -131,25 +112,51 @@ describe('BoardsController', () => {
       expect((result as ApiError).text).toContain('404');
     });
 
-    it('должен возвращать пустой массив при пустом ответе', async () => {
-      mock.onGet(`/boards/${boardId}`).reply(200, { data: [] });
-
-      const result = await controller.getTasksOnBoard(boardId);
-
-      expect(result).toEqual([]);
-    });
-
-    it('должен возвращать пустой массив если доска не найдена', async () => {
-      mock.onGet('/boards').reply(200, { data: [] });
+    it('должен возвращать ApiError при ошибке запроса досок', async () => {
       mock.onGet(`/boards/${boardId}`).reply(200, { data: mockTasks });
+      mock.onGet('/boards').reply(404, { message: 'Boards not found' });
 
       const result = await controller.getTasksOnBoard(boardId);
 
-      expect(result).toEqual([]);
+      expect(result).toBeInstanceOf(ApiError);
+      expect((result as ApiError).text).toContain('404');
     });
 
-    it('должен возвращать ApiError при сетевой ошибке', async () => {
+    it('должен возвращать ApiError если доска не найдена', async () => {
+      mock.onGet(`/boards/${boardId}`).reply(200, { data: mockTasks });
+      mock.onGet('/boards').reply(200, { data: [] });
+
+      const result = await controller.getTasksOnBoard(boardId);
+
+      expect(result).toBeInstanceOf(ApiError);
+      expect((result as ApiError).text).toBe('Board not found');
+    });
+
+    it('должен возвращать объект с пустым массивом задач при пустом ответе', async () => {
+      mock.onGet(`/boards/${boardId}`).reply(200, { data: [] });
+      mock.onGet('/boards').reply(200, { data: mockBoards });
+
+      const result = await controller.getTasksOnBoard(boardId);
+
+      expect(result).not.toBeInstanceOf(ApiError);
+      expect(result).toEqual({
+        tasks: [],
+        board: mockBoard,
+      });
+    });
+
+    it('должен возвращать ApiError при сетевой ошибке запроса задач', async () => {
       mock.onGet(`/boards/${boardId}`).networkError();
+
+      const result = await controller.getTasksOnBoard(boardId);
+
+      expect(result).toBeInstanceOf(ApiError);
+      expect((result as ApiError).text).toBe('Network Error');
+    });
+
+    it('должен возвращать ApiError при сетевой ошибке запроса досок', async () => {
+      mock.onGet(`/boards/${boardId}`).reply(200, { data: mockTasks });
+      mock.onGet('/boards').networkError();
 
       const result = await controller.getTasksOnBoard(boardId);
 

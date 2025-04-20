@@ -1,61 +1,45 @@
 import { Box, Grid } from '@mui/material';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 
-import { Preloader, Error } from '#view/shared';
+import { Task } from '#shared/types';
 
-import { Filter, Search, TasksColumn } from './components';
-import {
-  TASKS_COLUMN_HEIGHT,
-  TASKS_FILTER_SEARCH_BOX_HEIGHT,
-} from './constants';
+import { TasksColumn } from './components';
 import { TasksModel } from './model';
 
 type TasksComponentProps = {
   model: TasksModel;
+  toolbarHeight: string;
 };
 
-const TasksComponent = observer(({ model }: TasksComponentProps) => {
-  if (model.isLoading) {
-    return <Preloader />;
-  }
-
-  if (model.isError) {
+const TasksComponent = observer(
+  ({ model, toolbarHeight }: TasksComponentProps) => {
     return (
-      <Error
-        onClick={model.navigateBoardsPage}
-        buttonTitle="Перейти ко всем доскам"
-      />
-    );
-  }
-
-  return (
-    <Box
-      height={'100%'}
-      display={'flex'}
-      flexDirection={'column'}
-      sx={{ padding: 1 }}
-    >
       <Box
+        height={`calc(100% - 90px - ${toolbarHeight})`}
         display={'flex'}
-        justifyContent={'space-between'}
-        m={1}
-        height={TASKS_FILTER_SEARCH_BOX_HEIGHT}
+        flexDirection={'column'}
+        sx={{ padding: 1 }}
       >
-        <Search model={model} />
-        <Filter model={model} />
+        <Grid height={`100%`}>
+          <TasksColumn
+            items={model.tasks}
+            onClickTask={model.editTask}
+            onClickButton={model.createNewTask}
+          />
+        </Grid>
       </Box>
-      <Grid height={TASKS_COLUMN_HEIGHT}>
-        <TasksColumn
-          items={model.tasks}
-          onClickTask={model.editTask}
-          onClickButton={model.createNewTask}
-        />
-      </Grid>
-    </Box>
-  );
-});
+    );
+  },
+);
 
-export const Tasks = () => {
-  const model = new TasksModel();
-  return <TasksComponent model={model} />;
+export type TasksProps = {
+  tasks: Task[];
+  getTasks: VoidFunction;
+  toolbarHeight: string;
 };
+
+export const Tasks = React.memo((props: TasksProps) => {
+  const model = new TasksModel(props);
+  return <TasksComponent model={model} toolbarHeight={props.toolbarHeight} />;
+});

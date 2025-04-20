@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, FormControl } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 
 import { TaskDialogModel } from '../model';
@@ -13,8 +13,10 @@ export const ButtonToBoard = observer(({ model }: ButtonToBoardProps) => {
   }
 
   return (
-    <Button onClick={() => model.controls.buttonToBoard.onClick?.()}>
-      {model.controls.buttonToBoard.text}
-    </Button>
+    <FormControl variant="filled">
+      <Button onClick={() => model.controls.buttonToBoard.onClick?.()}>
+        {model.controls.buttonToBoard.text}
+      </Button>
+    </FormControl>
   );
 });

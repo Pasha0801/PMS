@@ -1,7 +1,7 @@
 import {
+  CircularProgress,
   FormControl,
   FormHelperText,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -19,7 +19,9 @@ export const FieldAssignee = observer(({ model }: FieldAssigneeProps) => {
     <FormControl variant="filled" disabled={model.form.assignee.isLoading}>
       <InputLabel id="assignee">
         {model.form.assignee.label}
-        {model.form.assignee.isLoading && <IconButton loading sx={{ ml: 2 }} />}
+        {model.form.assignee.isLoading && (
+          <CircularProgress size={15} sx={{ ml: 2 }} />
+        )}
       </InputLabel>
       <Select value={model.form.assignee.value?.id ?? ''} labelId="assignee">
         {model.form.assignee.options.map((assignee) => (

@@ -1,4 +1,4 @@
-import { Box, Paper, Grid, Button, Typography } from '@mui/material';
+import { Box, Button, Grid, Paper } from '@mui/material';
 
 import { Task } from '#shared/types';
 
@@ -16,7 +16,6 @@ export const TasksColumn = ({
   onClickButton,
 }: BoardColumnProps) => {
   return (
-    // TODO вынести в константу высоту и разобраться с event на выделение текста/
     <Grid height={'100%'}>
       <Paper
         variant="outlined"
@@ -34,10 +33,8 @@ export const TasksColumn = ({
         </Box>
       </Paper>
       <Box display={'flex'} justifyContent={'right'} padding={1}>
-        <Button variant="contained" onClick={() => onClickButton()}>
-          <Typography variant="h6" sx={{ textTransform: 'none' }}>
-            Создать задачу
-          </Typography>
+        <Button variant="text" onClick={() => onClickButton()}>
+          Создать задачу
         </Button>
       </Box>
     </Grid>

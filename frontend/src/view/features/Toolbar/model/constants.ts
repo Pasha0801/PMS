@@ -1,4 +1,4 @@
-import { Filter, Search } from './types';
+import { Filter, Search } from '../types';
 
 export const DEFAULT_SEARCH: Search = {
   label: 'Поиск',

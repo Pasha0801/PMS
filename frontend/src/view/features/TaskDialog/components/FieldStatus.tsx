@@ -15,7 +15,7 @@ type FieldStatusProps = {
 
 export const FieldStatus = observer(({ model }: FieldStatusProps) => {
   return (
-    <FormControl variant="filled">
+    <FormControl variant="filled" disabled={model.form.status.isDisabled}>
       <InputLabel id="status">{model.form.status.label}</InputLabel>
       <Select value={model.form.status.value ?? ''} labelId="status">
         {model.form.status.options.map((status) => (
