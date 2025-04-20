@@ -123,4 +123,9 @@ export class TasksModel {
     };
     appModel.dialog.open(TaskDialog(taskDialogProps));
   };
+
+  /** навигация в случае ошибки загрузки данных*/
+  public navigateBoardsPage = () => {
+    appModel.router.navigate('/boards');
+  };
 }

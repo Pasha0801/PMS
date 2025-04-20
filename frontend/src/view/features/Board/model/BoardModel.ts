@@ -13,6 +13,7 @@ export class BoardModel {
   private readonly boardsController: BoardsController = boardsController;
   private tasks: Task[] = [];
   private boardId: number | null = null;
+  public titleBoard: string | null = null;
   public isLoading: boolean = true;
   public isError: boolean = false;
   public taskToDo: Task[] = [];
@@ -24,6 +25,7 @@ export class BoardModel {
 
     this.setBoardId();
     this.getTasks();
+    this.setTitleBoard();
   }
 
   private setBoardId = () => {
@@ -40,13 +42,26 @@ export class BoardModel {
         this.isError = true;
       } else {
         this.tasks = res;
-        this.taskToDo = this.tasks.filter(({ status }) => status === 'Backlog');
-        this.taskInProgress = this.tasks.filter(
-          ({ status }) => status === 'InProgress',
-        );
-        this.taskDone = this.tasks.filter(({ status }) => status === 'Done');
+        this.filterTasks();
+        this.setTitleBoard();
+        this.isLoading = false;
+        this.isError = false;
       }
     }
+  };
+
+  private setTitleBoard = () => {
+    if (this.tasks.length > 0) {
+      this.titleBoard = this.tasks[0].boardName;
+    }
+  };
+
+  private filterTasks = () => {
+    this.taskToDo = this.tasks.filter(({ status }) => status === 'Backlog');
+    this.taskInProgress = this.tasks.filter(
+      ({ status }) => status === 'InProgress',
+    );
+    this.taskDone = this.tasks.filter(({ status }) => status === 'Done');
   };
 
   public editTask = (task: Task) => {
@@ -59,5 +74,9 @@ export class BoardModel {
       type: 'edit',
     };
     appModel.dialog.open(TaskDialog(taskDialogProps));
+  };
+
+  public navigateTasksPage = () => {
+    appModel.router.navigate('/boards');
   };
 }
