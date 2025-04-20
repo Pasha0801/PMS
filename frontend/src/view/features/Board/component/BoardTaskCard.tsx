@@ -1,23 +1,42 @@
 import { Typography, Card, CardContent } from '@mui/material';
+import { useDrag } from 'react-dnd';
 
 import { Task } from '#shared/types';
 
 type TaskCardToBoardProps = {
   task: Task;
   onClick: (task: Task) => void;
+  sourceColumn: 'taskToDo' | 'taskInProgress' | 'taskDone';
+  index: number;
 };
 
-export const BoardTaskCard = ({ task, onClick }: TaskCardToBoardProps) => {
+export const BoardTaskCard = ({
+  task,
+  onClick,
+  sourceColumn,
+  index,
+}: TaskCardToBoardProps) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'task',
+    item: { id: task.id, sourceColumn, index },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
   return (
     <Card
+      ref={drag as unknown as React.Ref<HTMLDivElement>}
       variant="elevation"
       sx={{
         transition: 'all 0.1s ease',
+        zIndex: isDragging ? 1000 : 1,
+        border: isDragging ? '2px solid #ccc' : 'none',
         '&:hover': {
-          transform: 'scale(1.0007)',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-          zIndex: 1,
+          transform: isDragging ? null : 'scale(1.007)',
+          zIndex: isDragging ? 1000 : 2,
         },
+        cursor: isDragging ? 'grabbing' : 'grab',
       }}
     >
       <CardContent

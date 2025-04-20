@@ -4,7 +4,8 @@ import {
   BoardsController,
   boardsController,
 } from '#controller/BoardsController';
-import { Task } from '#shared/types';
+import { tasksController } from '#controller/TasksController';
+import { Task, Status } from '#shared/types';
 import { ApiError } from '#shared/utils';
 import { appModel } from '#view/app';
 import { TaskDialog, TaskDialogModelProps } from '#view/features/TaskDialog';
@@ -78,5 +79,52 @@ export class BoardModel {
 
   public navigateTasksPage = () => {
     appModel.router.navigate('/boards');
+  };
+
+  public moveTask = async (
+    taskId: number,
+    sourceColumn: 'taskToDo' | 'taskInProgress' | 'taskDone',
+    destinationColumn: 'taskToDo' | 'taskInProgress' | 'taskDone',
+    destinationIndex: number,
+  ) => {
+    const statusMap: {
+      [key in 'taskToDo' | 'taskInProgress' | 'taskDone']: Status;
+    } = {
+      taskToDo: Status.Backlog,
+      taskInProgress: Status.InProgress,
+      taskDone: Status.Done,
+    };
+
+    const sourceTasks = [...this[sourceColumn]];
+    const taskIndex = sourceTasks.findIndex((task) => task.id === taskId);
+    if (taskIndex === -1) {
+      return false;
+    }
+
+    const [movedTask] = sourceTasks.splice(taskIndex, 1);
+    movedTask.status = statusMap[destinationColumn];
+
+    this[sourceColumn] = sourceTasks;
+
+    const destinationTasks = [...this[destinationColumn]];
+    const insertIndex =
+      destinationIndex >= 0 ? destinationIndex : destinationTasks.length;
+    destinationTasks.splice(insertIndex, 0, movedTask);
+    this[destinationColumn] = destinationTasks;
+
+    if (sourceColumn === destinationColumn) {
+      return true;
+    }
+
+    const res = await tasksController.updateTaskStatus(movedTask);
+    if (res instanceof ApiError) {
+      this[sourceColumn] = [...sourceTasks, movedTask];
+      this[destinationColumn] = destinationTasks.filter(
+        (task) => task.id !== taskId,
+      );
+      return false;
+    }
+
+    return true;
   };
 }
