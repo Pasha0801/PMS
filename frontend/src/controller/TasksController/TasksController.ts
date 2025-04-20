@@ -106,7 +106,7 @@ export class TaskController {
     const res = await this.queryService.put<
       UpdateTaskRequest,
       UpdateTaskResponse
-    >(`/tasks/${task.id}`, updateTaskData, signal);
+    >(`/tasks/update/${task.id}`, updateTaskData, signal);
 
     if (res instanceof ApiError) {
       return res;

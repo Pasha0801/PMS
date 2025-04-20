@@ -19,6 +19,10 @@ class RouterModel {
     }
   };
 
+  public getCurrentLocation = () => {
+    return this.router?.state.location.pathname ?? '';
+  };
+
   public get Component(): ReactNode {
     return this.router ? <RouterProvider router={this.router} /> : null;
   }

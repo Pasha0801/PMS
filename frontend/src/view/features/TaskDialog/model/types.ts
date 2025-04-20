@@ -6,6 +6,7 @@ export type TaskDialogModelProps = {
   board: Board | null;
   disableFieldBoard: boolean;
   showButtonToBoard: boolean;
+  onSuccess: () => void;
 };
 
 export type TaskDialogControls = {
@@ -27,19 +28,19 @@ export type TaskDialogControls = {
 
 export type TaskDialogForm = {
   title: {
-    label: string,
+    label: string;
     value: string | null;
     isError: boolean;
     errorText: string;
   };
   description: {
-    label: string,
+    label: string;
     value: string | null;
     isError: boolean;
     errorText: string;
   };
   board: {
-    label: string,
+    label: string;
     value: Board | null;
     options: Board[];
     isDisabled: boolean;
@@ -48,21 +49,21 @@ export type TaskDialogForm = {
     errorText: string;
   };
   priority: {
-    label: string,
+    label: string;
     value: Priority | null;
     options: Priority[];
     isError: boolean;
     errorText: string;
   };
   status: {
-    label: string,
+    label: string;
     value: Status | null;
     options: Status[];
     isError: boolean;
     errorText: string;
   };
   assignee: {
-    label: string,
+    label: string;
     value: User | null;
     options: User[];
     isLoading: boolean;
@@ -71,4 +72,4 @@ export type TaskDialogForm = {
   };
 };
 
-export type TaskDialogField = keyof TaskDialogForm
+export type TaskDialogField = keyof TaskDialogForm;
