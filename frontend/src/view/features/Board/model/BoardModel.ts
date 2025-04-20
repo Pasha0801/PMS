@@ -6,6 +6,7 @@ import {
 import { Task } from '#shared/types';
 import { appModel } from '#view/app';
 import { ApiError } from '#shared/utils';
+import { TaskDialog, TaskDialogModelProps } from '#view/features/TaskDialog';
 
 export class BoardModel {
   private readonly boardsController: BoardsController = boardsController;
@@ -45,5 +46,17 @@ export class BoardModel {
         this.taskDone = this.tasks.filter(({ status }) => status === 'Done');
       }
     }
+  };
+
+  public editTask = (task: Task) => {
+    const taskDialogProps: TaskDialogModelProps = {
+      board: null,
+      disableFieldBoard: false,
+      onSuccess: () => this.getTasks(),
+      showButtonToBoard: false,
+      task,
+      type: 'edit',
+    };
+    appModel.dialog.open(TaskDialog(taskDialogProps));
   };
 }
