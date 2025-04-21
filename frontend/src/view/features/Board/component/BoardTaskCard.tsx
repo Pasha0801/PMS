@@ -30,11 +30,11 @@ export const BoardTaskCard = ({
       variant="elevation"
       sx={{
         transition: 'all 0.1s ease',
-        zIndex: isDragging ? 1000 : 1,
+        zIndex: isDragging ? 100 : 1,
         border: isDragging ? '3px solid #ccc' : 'none',
         '&:hover': {
           transform: isDragging ? null : 'scale(1.007)',
-          zIndex: isDragging ? 1000 : 2,
+          zIndex: isDragging ? 100 : 2,
         },
         cursor: isDragging ? 'grabbing' : 'grab',
       }}
@@ -67,7 +67,7 @@ export const BoardTaskCard = ({
         >
           {task.description}
         </Typography>
-        <Box>
+        <Box display={'flex'} justifyContent={'space-between'}>
           <Typography
             variant="body2"
             sx={{
@@ -75,6 +75,15 @@ export const BoardTaskCard = ({
             }}
           >
             {task.assignee.fullName}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            sx={{
+              textDecoration: 'none',
+            }}
+          >
+            {task.priority}
           </Typography>
         </Box>
       </CardContent>

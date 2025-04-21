@@ -25,6 +25,7 @@ const TasksComponent = observer(
           <TasksColumn
             items={model.tasks}
             onClickTask={model.editTask}
+            onClickBoard={model.navigateToBoard}
             onClickButton={model.createNewTask}
           />
         </Grid>

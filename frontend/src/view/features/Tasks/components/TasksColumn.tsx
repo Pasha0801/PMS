@@ -7,6 +7,7 @@ import { TasksTaskCard } from './TaskCard';
 type BoardColumnProps = {
   items: Task[];
   onClickTask: (task: Task) => void;
+  onClickBoard: (boardId: number) => void;
   onClickButton: () => void;
 };
 
@@ -14,6 +15,7 @@ export const TasksColumn = ({
   items,
   onClickTask,
   onClickButton,
+  onClickBoard,
 }: BoardColumnProps) => {
   return (
     <Grid height={'100%'}>
@@ -28,7 +30,12 @@ export const TasksColumn = ({
       >
         <Box display="flex" flexDirection="column" gap={1} padding={2}>
           {items.map((task, index) => (
-            <TasksTaskCard key={index} task={task} onClick={onClickTask} />
+            <TasksTaskCard
+              key={index}
+              task={task}
+              onClick={onClickTask}
+              onClickBoard={onClickBoard}
+            />
           ))}
         </Box>
       </Paper>

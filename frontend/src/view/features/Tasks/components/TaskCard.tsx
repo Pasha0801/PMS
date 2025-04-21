@@ -1,13 +1,18 @@
-import { Typography, Card, CardContent } from '@mui/material';
+import { Typography, Card, CardContent, Box } from '@mui/material';
 
 import { Task } from '#shared/types';
 
 type TasksTaskCardProps = {
   task: Task;
   onClick: (task: Task) => void;
+  onClickBoard: (boardId: number) => void;
 };
 
-export const TasksTaskCard = ({ task, onClick }: TasksTaskCardProps) => {
+export const TasksTaskCard = ({
+  task,
+  onClick,
+  onClickBoard,
+}: TasksTaskCardProps) => {
   return (
     <Card
       variant="elevation"
@@ -48,14 +53,31 @@ export const TasksTaskCard = ({ task, onClick }: TasksTaskCardProps) => {
         >
           {task.description}
         </Typography>
-        <Typography
-          variant="body2"
-          sx={{
-            textDecoration: 'none',
-          }}
-        >
-          Доска: {task.boardName}
-        </Typography>
+        <Box display={'flex'} justifyContent={'space-between'}>
+          <Typography
+            onClick={(event) => {
+              event.stopPropagation();
+              onClickBoard(task.boardId);
+            }}
+            variant="body2"
+            sx={{
+              textDecoration: 'none',
+              ':hover': {
+                color: 'GrayText',
+              },
+            }}
+          >
+            Доска: {task.boardName}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              textDecoration: 'none',
+            }}
+          >
+            {task.assignee.fullName}
+          </Typography>
+        </Box>
       </CardContent>
     </Card>
   );
