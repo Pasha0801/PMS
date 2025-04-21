@@ -42,4 +42,9 @@ export class TasksModel {
     };
     appModel.dialog.open(TaskDialog(taskDialogProps));
   };
+
+  /** Переход на доску*/
+  public navigateToBoard = (boardId: number) => {
+    appModel.router.navigate(`/board/${boardId}`);
+  };
 }

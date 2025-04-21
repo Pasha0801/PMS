@@ -4,22 +4,26 @@ services:
             context: ./server
             dockerfile: Dockerfile
         ports:
-            - "8080:8080" # Соответствует EXPOSE 8080 в Dockerfile
+            - "${SERVER_HOST_PORT:-8080}:8080"
         container_name: avito-backend-container
         networks:
             - app-network
+        restart: unless-stopped
 
     frontend:
         build:
             context: ./frontend
             dockerfile: Dockerfile
+            args:
+                VITE_API_URL: ${FRONTEND_API_URL:-http://localhost:8080/api/v1/}
         ports:
-            - "3000:80" # Nginx слушает порт 80, мапим на 3000 на хосте
+            - "${FRONTEND_HOST_PORT:-3000}:80"
         container_name: avito-frontend-container
         depends_on:
             - server
         networks:
             - app-network
+        restart: unless-stopped
 
 networks:
     app-network:
