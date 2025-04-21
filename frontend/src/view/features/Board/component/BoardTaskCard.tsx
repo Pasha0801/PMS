@@ -1,4 +1,4 @@
-import { Typography, Card, CardContent } from '@mui/material';
+import { Typography, Card, CardContent, Box } from '@mui/material';
 import { useDrag } from 'react-dnd';
 
 import { Task } from '#shared/types';
@@ -31,7 +31,7 @@ export const BoardTaskCard = ({
       sx={{
         transition: 'all 0.1s ease',
         zIndex: isDragging ? 1000 : 1,
-        border: isDragging ? '2px solid #ccc' : 'none',
+        border: isDragging ? '3px solid #ccc' : 'none',
         '&:hover': {
           transform: isDragging ? null : 'scale(1.007)',
           zIndex: isDragging ? 1000 : 2,
@@ -67,6 +67,16 @@ export const BoardTaskCard = ({
         >
           {task.description}
         </Typography>
+        <Box>
+          <Typography
+            variant="body2"
+            sx={{
+              textDecoration: 'none',
+            }}
+          >
+            {task.assignee.fullName}
+          </Typography>
+        </Box>
       </CardContent>
     </Card>
   );

@@ -19,6 +19,7 @@ type GetUsersResponse = {
 export class UsersController {
   constructor(private queryService: QueryService) {}
 
+  /** Получает всех пользователей  */
   public async getUsers(): Promise<User[] | ApiError> {
     const res = await this.queryService.get<GetUsersResponse>('/users');
 

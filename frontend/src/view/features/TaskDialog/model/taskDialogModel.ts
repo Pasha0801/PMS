@@ -50,7 +50,10 @@ export class TaskDialogModel {
     this.form[field].value = value;
     this.validate();
 
-    this.appController.storageSetCreateTaskData(this.task[1]);
+    // Если диалог создания записывать в LS
+    if (this.props.type === 'create') {
+      this.appController.storageSetCreateTaskData(this.task[1]);
+    }
   };
 
   // Приватные методы

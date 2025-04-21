@@ -63,6 +63,7 @@ export class TasksController {
     return res.data;
   }
 
+  /** Создает новую task */
   public async createTask(task: Task): Promise<ID | ApiError> {
     const createTaskData: CreateTaskRequest = {
       boardId: task.boardId,
@@ -84,6 +85,7 @@ export class TasksController {
     return res.data;
   }
 
+  /** Изменяет task */
   public async updateTask(task: Task): Promise<Message | ApiError> {
     const updateTaskData: UpdateTaskRequest = {
       description: task.description,
@@ -105,6 +107,7 @@ export class TasksController {
     return res.data;
   }
 
+  /** Изменяет status task */
   public async updateTaskStatus(task: Task): Promise<Message | ApiError> {
     const updateTaskStatusData: UpdateTaskStatusRequest = {
       status: task.status,
