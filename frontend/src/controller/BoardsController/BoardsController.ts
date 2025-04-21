@@ -32,6 +32,7 @@ export class BoardsController {
     return res.data;
   }
 
+  /** Получает все Tasks доски */
   public async getTasksOnBoard(
     boardId: number,
   ): Promise<{ tasks: Task[]; board: Board } | ApiError> {
